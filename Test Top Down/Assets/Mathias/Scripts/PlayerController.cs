@@ -5,15 +5,17 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public float moveSpeed = 1f;
+    public float moveSpeed = 150f;
 
-    public float collisionOffset = 0.05f;
+    public float maxSpeed = 8f;
+
+    public float idleFriction = 0.9f;
 
     public ContactFilter2D movementFilter;
 
     public SwordAttack swordAttack;
 
-    Vector2 movementInput;
+    Vector2 moveInput;
     SpriteRenderer spriteRenderer;
     Rigidbody2D rb;
     Animator animator;
@@ -35,33 +37,37 @@ public class PlayerController : MonoBehaviour
         if (canMove)
         {
             //if movement input is not 0, try to move
-            if (movementInput != Vector2.zero)
+            if (moveInput != Vector2.zero)
             {
-                bool success = TryMove(movementInput);
+                /*                bool success = TryMove(moveInput);
 
-                if (!success)
-                {
-                    //Try moving in both direction when moving diagonally to slide instead of being blocked
-                    success = TryMove(new Vector2(movementInput.x, 0));
+                                if (!success)
+                                {
+                                    //Try moving in both direction when moving diagonally to slide instead of being blocked
+                                    success = TryMove(new Vector2(moveInput.x, 0));
 
-                }
-                if (!success)
-                {
-                    success = TryMove(new Vector2(0, movementInput.y));
-                }
-                animator.SetBool("isMoving", success);
+                                }
+                                if (!success)
+                                {
+                                    success = TryMove(new Vector2(0, moveInput.y));
+                                }*/
+                rb.velocity = Vector2.ClampMagnitude(rb.velocity + (moveInput * moveSpeed * Time.deltaTime), maxSpeed);
+                animator.SetFloat("Horizontal", moveInput.x);
+                animator.SetFloat("Vertical", moveInput.y);
+                animator.SetBool("isMoving", true);
             }
             else
             {
+                rb.velocity = Vector2.Lerp(rb.velocity, Vector2.zero, idleFriction) ;
                 animator.SetBool("isMoving", false);
             }
 
             //Set direction of sprite to movement direction
-            if (movementInput.x < 0)
+            if (moveInput.x < 0)
             {
                 spriteRenderer.flipX = true;
             }
-            else if (movementInput.x > 0)
+            else if (moveInput.x > 0)
             {
                 spriteRenderer.flipX = false;
             }
@@ -69,7 +75,7 @@ public class PlayerController : MonoBehaviour
 
     }
 
-    private bool TryMove(Vector2 direction)
+/*    private bool TryMove(Vector2 direction)
     {
         if (direction != Vector2.zero)
         {
@@ -96,7 +102,7 @@ public class PlayerController : MonoBehaviour
             // Can't move if there's no direction to move in
             return false;
         } 
-    }
+    }*/
 
     public void SwordAttackFront()
     {
@@ -136,7 +142,7 @@ public class PlayerController : MonoBehaviour
 
     void OnMove(InputValue movementValue)
     {
-        movementInput = movementValue.Get<Vector2>();
+        moveInput = movementValue.Get<Vector2>();
     }
 
     void OnFire()
