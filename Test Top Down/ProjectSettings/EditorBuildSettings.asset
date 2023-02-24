@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Mathias/Levels/SampleScene.unity
+    path: Assets/Mathias/Scenes/Base.unity
+    guid: b28379b0b298fa947b3838ca2bfca156
+  - enabled: 1
+    path: Assets/Mathias/Scenes/Level 1.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   m_configObjects: {}

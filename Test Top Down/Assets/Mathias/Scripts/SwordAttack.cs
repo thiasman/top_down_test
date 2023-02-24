@@ -5,7 +5,8 @@ using UnityEngine;
 public class SwordAttack : MonoBehaviour
 {
     BoxCollider2D swordCollider;
-    public float damage = 3;
+    public float damage = 1f;
+    public float knockbackForce = 500f;
 
     private void Start()
     {
@@ -42,18 +43,16 @@ public class SwordAttack : MonoBehaviour
         swordCollider.enabled = false;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
-        print("Hit");
-        if(other.CompareTag("Enemy"))
-        {
-            Enemy enemy = other.GetComponent<Enemy>();
+        IDamageable damageableObject = collider.GetComponent<IDamageable>();
 
-            if (enemy != null)
-            {
-                print(enemy.Health);
-                enemy.Health -= damage;
-            }
+        if (damageableObject != null) {
+            Vector2 parentPosition = transform.parent.position;
+            Vector2 direction = ((Vector2)collider.transform.position - parentPosition).normalized;
+            Vector2 knockback = direction * knockbackForce;
+            
+            damageableObject.OnHit(damage, knockback);
         }
     }
 }
