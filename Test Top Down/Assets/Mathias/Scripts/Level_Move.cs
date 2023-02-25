@@ -9,7 +9,7 @@ public class Level_Move : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if(other.tag == "Player")
+        if(other.tag == "Ennemy")
         {
             SceneManager.LoadScene(sceneBuildIndex, LoadSceneMode.Single);
         }
