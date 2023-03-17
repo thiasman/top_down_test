@@ -47,14 +47,14 @@ public class PlayerController : MonoBehaviour
             }
 
             animator.SetFloat("Horizontal", moveInput.x);
-                animator.SetFloat("Vertical", moveInput.y);
-                animator.SetBool("isMoving", true);
+            animator.SetFloat("Vertical", moveInput.y);
+            animator.SetBool("isMoving", true);
          }
-            else
-            {
+        else
+        {
             rb.velocity = Vector2.zero;
-                animator.SetBool("isMoving", false);
-            }  
+            animator.SetBool("isMoving", false);
+        }  
     }
 
     public void SwordAttackFront()
