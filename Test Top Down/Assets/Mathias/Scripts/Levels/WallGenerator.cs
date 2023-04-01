@@ -2,17 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WallGenerator : MonoBehaviour
+public static class WallGenerator
 {
-    // Start is called before the first frame update
-    void Start()
+    public static void CreateWalls(HashSet<Vector2Int> floorPositions, TilemapVisualizer tilemapVisualizer)
     {
-        
+        var basicWallPositions = FindWallsInDirections(floorPositions, Direction2D.cardinalDirectionsList);
+        foreach (var position in basicWallPositions)
+        {
+            tilemapVisualizer.PaintSingleBasicWall(position);
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private static HashSet<Vector2Int> FindWallsInDirections(HashSet<Vector2Int> floorPositions, List<Vector2Int> directionList)
     {
-        
+        HashSet<Vector2Int> wallPositions = new HashSet<Vector2Int>();
+        foreach (var position in floorPositions)
+        {
+            foreach (var direction in directionList)
+            {
+                var neighbourPosition = position + direction;
+                if (floorPositions.Contains(neighbourPosition) == false)
+                {
+                    wallPositions.Add(neighbourPosition);
+                }
+            }
+        }
+        return wallPositions;
     }
 }
