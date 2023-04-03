@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using Random = UnityEngine.Random;
 
 
 public static class ProceduralGenerationAlgorithms
@@ -37,6 +38,75 @@ public static class ProceduralGenerationAlgorithms
         }
 
         return corridor;
+    }
+
+    public static List<BoundsInt> BinarySpacePartitioning(BoundsInt spaceToSplit, int minWidth, int minHeight)
+    {
+        //Take a room from the queue and try to split it, queue is a data structure, object are removed and added automatically
+        //Add the rooms back in the queue if the size allows in a loop, 
+        Queue<BoundsInt> roomsQueue = new Queue<BoundsInt>();
+        List<BoundsInt> roomsList = new List<BoundsInt>();
+
+        roomsQueue.Enqueue(spaceToSplit);
+
+        while (roomsQueue.Count > 0)
+        {
+            var room = roomsQueue.Dequeue();
+            if(room.size.y >= minHeight && room.size.x >= minWidth)
+            {
+                if(UnityEngine.Random.value < 0.5f) // This is just to randomize starting to split vertically or horizontally
+                {
+                    if(room.size.y >= minHeight * 2)
+                    {
+                        SplitHorizontally(minHeight, roomsQueue, room);
+                    }
+                    else if(room.size.x >= minWidth * 2) {
+                        SplitVertically(minWidth, roomsQueue, room);
+                    }
+                    else if(room.size.x >= minWidth && room.size.y >= minHeight){
+                        //Can't be split but is a room
+                        roomsList.Add(room);
+                    }
+                }
+                else
+                {
+                    if (room.size.x >= minWidth * 2)
+                    {
+                        SplitVertically(minWidth, roomsQueue, room);
+                    }
+                    else if (room.size.y >= minHeight * 2)
+                    {
+                        SplitHorizontally(minHeight, roomsQueue, room);
+                    }
+                    else if(room.size.x >= minWidth && room.size.y >= minHeight){
+                        //Can't be split but is a room
+                        roomsList.Add(room);
+                    }
+                }
+            }
+        }
+
+        return roomsList;
+    }
+
+    private static void SplitHorizontally(int minHeight, Queue<BoundsInt> roomsQueue, BoundsInt room)
+    {
+        var ySplit = Random.Range(1, room.size.x);
+        BoundsInt room1 = new BoundsInt(room.min, new Vector3Int(room.size.x, ySplit, room.size.z));
+        BoundsInt room2 = new BoundsInt(new Vector3Int(room.min.x, room.min.y + ySplit, room.min.z),
+            new Vector3Int(room.size.x, room.size.y - ySplit, room.size.z));
+        roomsQueue.Enqueue(room1);
+        roomsQueue.Enqueue(room2);
+    }
+
+    private static void SplitVertically(int minWidth, Queue<BoundsInt> roomsQueue, BoundsInt room)
+    {
+        var xSplit = Random.Range(1, room.size.x);
+        BoundsInt room1 = new BoundsInt(room.min, new Vector3Int(xSplit, room.size.y, room.size.z));
+        BoundsInt room2 = new BoundsInt(new Vector3Int(room.min.x + xSplit, room.min.y, room.min.z),
+            new Vector3Int(room.size.x - xSplit, room.size.y, room.size.z));
+        roomsQueue.Enqueue(room1);
+        roomsQueue.Enqueue(room2);
     }
 }
 
